@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koker Bank — Bitcoin Platform</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --gold: #F5A623;
+    --gold-light: #FFD166;
+    --black: #0A0A0A;
+    --dark: #111111;
+    --card: #181818;
+    --card2: #202020;
+    --border: #2a2a2a;
+    --text: #E8E8E8;
+    --muted: #777;
+    --green: #00D68F;
+    --red: #FF4D4D;
+    --blue: #4D9FFF;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--black);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== LANDING ===== */
+  #landing {
+    min-height: 100vh;
+    background: var(--black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(245,166,35,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,166,35,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .bg-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,166,35,0.12) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -60%);
+    pointer-events: none;
+  }
+
+  .landing-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, #F5A623, #FFD166, #F5A623);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    line-height: 1;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .landing-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 8px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .landing-tagline {
+    font-size: 18px;
+    color: #aaa;
+    margin-top: 24px;
+    text-align: center;
+    max-width: 420px;
+    line-height: 1.6;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .landing-btns {
+    display: flex;
+    gap: 16px;
+    margin-top: 48px;
+    animation: fadeUp 0.8s 0.5s ease both;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #F5A623, #FFD166);
+    color: #000;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 36px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(245,166,35,0.4); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 14px 36px;
+    border: 1.5px solid var(--gold);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { background: rgba(245,166,35,0.08); }
+
+  .ticker-bar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #111;
+    border-top: 1px solid var(--border);
+    padding: 10px 0;
+    overflow: hidden;
+    animation: fadeUp 1s 0.8s ease both;
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 60px;
+    animation: ticker 18s linear infinite;
+    white-space: nowrap;
+    width: max-content;
+  }
+
+  .ticker-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ticker-name { color: var(--gold); font-weight: 700; }
+  .ticker-price { color: var(--text); }
+  .ticker-change.up { color: var(--green); }
+  .ticker-change.down { color: var(--red); }
+
+  @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== AUTH MODAL ===== */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%; max-width: 420px;
+    position: relative;
+    animation: slideUp 0.3s ease;
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .modal-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.5px; }
+  .form-group input, .form-group select {
+    width: 100%;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+
+  .form-row { display: flex; gap: 12px; }
+  .form-row .form-group { flex: 1; }
+
+  .modal-footer { margin-top: 20px; text-align: center; font-size: 13px; color: var(--muted); }
+  .modal-footer span { color: var(--gold); cursor: pointer; }
+  .modal-footer span:hover { text-decoration: underline; }
+
+  .close-btn {
+    position: absolute; top: 16px; right: 20px;
+    background: none; border: none; color: var(--muted);
+    font-size: 22px; cursor: pointer; line-height: 1;
+  }
+  .close-btn:hover { color: var(--text); }
+
+  .demo-hint {
+    background: rgba(245,166,35,0.08);
+    border: 1px solid rgba(245,166,35,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--gold);
+    margin-bottom: 20px;
+    font-family: 'Space Mono', monospace;
+    line-height: 1.6;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== LAYOUT ===== */
+  #app { display: none; min-height: 100vh; }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 240px;
+    height: 100vh;
+    background: var(--dark);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    z-index: 100;
+    transition: transform 0.3s;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #F5A623, #FFD166);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .sidebar-role {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+
+  .nav-section { font-size: 10px; letter-spacing: 2px; color: var(--muted); padding: 12px 12px 6px; text-transform: uppercase; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #aaa;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+  .nav-item:hover { background: var(--card); color: var(--text); }
+  .nav-item.active { background: rgba(245,166,35,0.12); color: var(--gold); }
+  .nav-item .nav-icon { width: 18px; text-align: center; font-size: 16px; }
+
+  .sidebar-user {
+    padding: 16px 16px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+
+  .user-avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #F5A623, #FFD166);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #000;
+    flex-shrink: 0;
+  }
+
+  .user-info-small { flex: 1; overflow: hidden; }
+  .user-name-small { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-email-small { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .main-content {
+    margin-left: 240px;
+    min-height: 100vh;
+    background: var(--black);
+  }
+
+  .top-bar {
+    position: sticky; top: 0;
+    background: rgba(10,10,10,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 50;
+  }
+
+  .top-bar-title { font-size: 20px; font-weight: 600; }
+  .top-bar-right { display: flex; align-items: center; gap: 16px; }
+
+  .btc-live {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .btc-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .page { display: none; padding: 32px; }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+
+  /* ===== CARDS ===== */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px; }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: rgba(245,166,35,0.3); }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.5px; margin-bottom: 8px; text-transform: uppercase; }
+  .stat-value { font-size: 28px; font-weight: 700; font-family: 'Space Mono', monospace; }
+  .stat-value.green { color: var(--green); }
+  .stat-value.gold { color: var(--gold); }
+  .stat-value.red { color: var(--red); }
+  .stat-change { font-size: 12px; margin-top: 6px; }
+  .stat-change.up { color: var(--green); }
+  .stat-change.down { color: var(--red); }
+  .stat-icon { position: absolute; top: 20px; right: 20px; font-size: 28px; opacity: 0.15; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title span { font-size: 12px; color: var(--muted); font-weight: 400; }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 8px 16px; text-align: left; border-bottom: 1px solid var(--border); font-weight: 500; }
+  td { padding: 13px 16px; font-size: 14px; border-bottom: 1px solid rgba(42,42,42,0.5); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+  .badge.green { background: rgba(0,214,143,0.15); color: var(--green); }
+  .badge.red { background: rgba(255,77,77,0.15); color: var(--red); }
+  .badge.gold { background: rgba(245,166,35,0.15); color: var(--gold); }
+  .badge.blue { background: rgba(77,159,255,0.15); color: var(--blue); }
+  .badge.muted { background: rgba(119,119,119,0.15); color: var(--muted); }
+
+  /* ===== BUTTONS ===== */
+  .btn { padding: 10px 22px; border-radius: 8px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+  .btn-primary { background: linear-gradient(135deg, #F5A623, #FFD166); color: #000; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,166,35,0.3); }
+  .btn-ghost { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-danger { background: rgba(255,77,77,0.15); color: var(--red); border: 1px solid rgba(255,77,77,0.2); }
+  .btn-danger:hover { background: rgba(255,77,77,0.25); }
+  .btn-success { background: rgba(0,214,143,0.15); color: var(--green); border: 1px solid rgba(0,214,143,0.2); }
+  .btn-success:hover { background: rgba(0,214,143,0.25); }
+  .btn-full { width: 100%; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* ===== CHART ===== */
+  .chart-container { height: 180px; position: relative; }
+  canvas { width: 100% !important; }
+
+  /* ===== SEND/RECEIVE ===== */
+  .big-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--gold);
+    text-align: center;
+    margin: 16px 0;
+  }
+
+  .wallet-address {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    word-break: break-all;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* ===== ADMIN CONTROLS ===== */
+  .user-row-admin { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .admin-badge { font-size: 10px; background: rgba(255,77,77,0.15); color: var(--red); padding: 2px 8px; border-radius: 20px; font-family: 'Space Mono', monospace; }
+
+  .toggle {
+    position: relative;
+    width: 42px; height: 22px;
+    background: var(--border);
+    border-radius: 11px;
+    cursor: pointer;
+    transition: background 0.3s;
+    flex-shrink: 0;
+    border: none;
+    outline: none;
+  }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 16px; height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s;
+  }
+  .toggle.on { background: var(--green); }
+  .toggle.on::after { transform: translateX(20px); }
+
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 14px;
+    z-index: 9999;
+    animation: toastIn 0.3s ease;
+    max-width: 320px;
+  }
+  .toast.success { border-color: rgba(0,214,143,0.4); }
+  .toast.error { border-color: rgba(255,77,77,0.4); }
+  @keyframes toastIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+  .separator { height: 1px; background: var(--border); margin: 20px 0; }
+
+  .section-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .section-sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  /* input */
+  .input {
+    width: 100%;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 12px;
+  }
+  .input:focus { border-color: var(--gold); }
+  .input-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; display: block; }
+  textarea.input { resize: none; height: 90px; }
+
+  .price-lg {
+    font-family: 'Space Mono', monospace;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* kyc */
+  .kyc-step { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; }
+  .kyc-num { width: 28px; height: 28px; border-radius: 50%; background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .kyc-num.done { background: rgba(0,214,143,0.2); color: var(--green); }
+  .kyc-num.active { background: rgba(245,166,35,0.2); color: var(--gold); }
+
+  .portfolio-bar { height: 8px; border-radius: 4px; background: var(--card2); overflow: hidden; margin-top: 6px; }
+  .portfolio-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #F5A623, #FFD166); transition: width 1s ease; }
+
+  .notif-dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; flex-shrink: 0; }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .main-content { margin-left: 0; }
+    .sidebar { transform: translateX(-100%); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== LANDING ==================== -->
+<div id="landing">
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  <div style="position:relative; text-align:center; padding: 20px;">
+    <div class="landing-logo">KOKER BANK</div>
+    <div class="landing-sub">Bitcoin • Crypto • Finance</div>
+    <div class="landing-tagline">The next-generation crypto banking platform. Buy, sell, and manage Bitcoin with institutional-grade tools.</div>
+    <div class="landing-btns">
+      <button class="btn-gold" onclick="showModal('login')">Sign In</button>
+      <button class="btn-outline" onclick="showModal('register')">Create Account</button>
+    </div>
+    <div style="margin-top:56px; display:flex; gap:48px; justify-content:center; flex-wrap:wrap; opacity:0.7; font-size:13px; color:var(--muted);">
+      <div>🔒 Bank-Grade Security</div>
+      <div>⚡ Instant Transfers</div>
+      <div>₿ Bitcoin Native</div>
+      <div>🌍 Global Access</div>
+    </div>
+  </div>
+
+  <!-- Ticker -->
+  <div class="ticker-bar">
+    <div class="ticker-track" id="ticker"></div>
+  </div>
+</div>
+
+<!-- ==================== AUTH MODALS ==================== -->
+<div class="modal-overlay" id="loginModal" style="display:none" onclick="closeModalOutside(event,'loginModal')">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal('loginModal')">×</button>
+    <div class="modal-title">SIGN IN</div>
+    <div class="modal-sub">Welcome back to Koker Bank</div>
+    <div class="demo-hint">
+      👤 User: user@koker.bank / pass123<br>
+      🔐 Admin: admin@koker.bank / admin123
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" value="user@koker.bank">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••" value="pass123">
+    </div>
+    <button class="btn-gold btn-full" onclick="login()" style="margin-top:8px;">Sign In</button>
+    <div class="modal-footer">Don't have an account? <span onclick="switchModal('loginModal','registerModal')">Create one →</span></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="registerModal" style="display:none" onclick="closeModalOutside(event,'registerModal')">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal('registerModal')">×</button>
+    <div class="modal-title">GET STARTED</div>
+    <div class="modal-sub">Open your Koker Bank account today</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" id="regFirst" placeholder="John">
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" id="regLast" placeholder="Doe">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="regEmail" placeholder="you@example.com">
+    </div>
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" id="regPhone" placeholder="+1 555 000 0000">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="regPass" placeholder="Min 8 characters">
+    </div>
+    <button class="btn-gold btn-full" onclick="register()">Create Account</button>
+    <div class="modal-footer">Already have an account? <span onclick="switchModal('registerModal','loginModal')">Sign in →</span></div>
+  </div>
+</div>
+
+<!-- ==================== APP ==================== -->
+<div id="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">KOKER BANK</div>
+      <div class="sidebar-role" id="sidebarRole">USER ACCOUNT</div>
+    </div>
+    <div class="sidebar-nav" id="sidebarNav"></div>
+    <div class="sidebar-user" onclick="logout()">
+      <div class="user-avatar" id="sidebarAvatar">U</div>
+      <div class="user-info-small">
+        <div class="user-name-small" id="sidebarName">User</div>
+        <div class="user-email-small" id="sidebarEmail">user@koker.bank</div>
+      </div>
+      <div style="color:var(--muted); font-size:18px;">↩</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="top-bar-title" id="topBarTitle">Dashboard</div>
+      <div class="top-bar-right">
+        <div class="btc-live">
+          <div class="btc-dot"></div>
+          <span style="color:var(--muted)">BTC/USD</span>
+          <span id="liveBtcPrice" style="color:var(--gold); font-weight:700;">$67,420</span>
+        </div>
+        <div style="cursor:pointer; position:relative;" onclick="showPage('notifications')">
+          <span style="font-size:20px;">🔔</span>
+          <div id="notifBadge" style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:var(--red);border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;">3</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USER PAGES -->
+    <div class="page active" id="page-dashboard">
+      <div class="section-title">Welcome back, <span id="welcomeName" style="color:var(--gold)">User</span> 👋</div>
+      <div class="section-sub">Here's your portfolio overview</div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon">₿</div>
+          <div class="stat-label">BTC Balance</div>
+          <div class="stat-value gold" id="dashBtcBal">0.00342</div>
+          <div class="stat-change up" id="dashBtcUsd">≈ $230.57 USD</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💵</div>
+          <div class="stat-label">USD Balance</div>
+          <div class="stat-value green" id="dashUsdBal">$2,450.00</div>
+          <div class="stat-change up">Available to invest</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <div class="stat-label">Total Portfolio</div>
+          <div class="stat-value" id="dashTotal">$2,680.57</div>
+          <div class="stat-change up" id="dashPnl">+$124.00 (4.9%)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔄</div>
+          <div class="stat-label">Total Transactions</div>
+          <div class="stat-value" id="dashTxCount">12</div>
+          <div class="stat-change">All time</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Price Chart (BTC/USD) <span>7 days</span></div>
+          <div class="chart-container">
+            <canvas id="priceChart"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Quick Actions</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <button class="btn btn-primary" onclick="showPage('buy')">₿ Buy Bitcoin</button>
+            <button class="btn btn-ghost" onclick="showPage('sell')">💰 Sell Bitcoin</button>
+            <button class="btn btn-ghost" onclick="showPage('send')">↑ Send BTC</button>
+            <button class="btn btn-ghost" onclick="showPage('receive')">↓ Receive BTC</button>
+            <button class="btn btn-ghost" onclick="showPage('deposit')">+ Deposit USD</button>
+            <button class="btn btn-ghost" onclick="showPage('withdraw')">- Withdraw USD</button>
+          </div>
+          <div class="separator"></div>
+          <div style="font-size:13px; color:var(--muted); margin-bottom:10px;">KYC Status</div>
+          <div class="kyc-step">
+            <div class="kyc-num done">✓</div>
+            <div style="flex:1"><div style="font-size:13px; font-weight:600;">Email Verified</div><div style="font-size:11px; color:var(--muted)">Completed</div></div>
+            <div class="badge green">DONE</div>
+          </div>
+          <div class="kyc-step" id="kycStep2">
+            <div class="kyc-num active">2</div>
+            <div style="flex:1"><div style="font-size:13px; font-weight:600;">ID Verification</div><div style="font-size:11px; color:var(--muted)">Upload government ID</div></div>
+            <button class="btn btn-sm btn-primary" onclick="showPage('kyc')">Start</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <div class="card-title">Recent Transactions <span onclick="showPage('transactions')" style="cursor:pointer; color:var(--gold)">View all →</span></div>
+        <div class="table-wrap">
+          <table id="recentTxTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUY PAGE -->
+    <div class="page" id="page-buy">
+      <div class="section-title">Buy Bitcoin</div>
+      <div class="section-sub">Purchase BTC at the current market rate</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Market Order</div>
+          <div style="text-align:center; margin-bottom:20px;">
+            <div style="font-size:13px; color:var(--muted);">Current BTC Price</div>
+            <div class="price-lg" id="buyBtcPrice">$67,420.00</div>
+            <div class="badge green" style="margin-top:6px;">+2.4% 24h</div>
+          </div>
+          <label class="input-label">Amount (USD)</label>
+          <input class="input" id="buyUsdAmount" type="number" placeholder="100" oninput="calcBuy()" value="100">
+          <label class="input-label">You will receive (BTC)</label>
+          <input class="input" id="buyBtcReceive" type="text" readonly placeholder="0.00148...">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:16px;">
+            <span>Available: <span id="buyAvailUsd" style="color:var(--text)">$2,450.00</span></span>
+            <span>Fee: 0.5%</span>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="executeBuy()">Confirm Purchase</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Order Preview</div>
+          <div id="buyPreview" style="color:var(--muted); font-size:14px; text-align:center; padding:40px 0;">Enter an amount to see order details</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SELL PAGE -->
+    <div class="page" id="page-sell">
+      <div class="section-title">Sell Bitcoin</div>
+      <div class="section-sub">Convert your BTC to USD instantly</div>
+      <div class="grid-2">
+        <div class="card">
+          <label class="input-label">Amount (BTC)</label>
+          <input class="input" id="sellBtcAmount" type="number" placeholder="0.001" oninput="calcSell()" step="0.0001">
+          <label class="input-label">You will receive (USD)</label>
+          <input class="input" id="sellUsdReceive" type="text" readonly placeholder="$0.00">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:16px;">
+            <span>Available: <span id="sellAvailBtc" style="color:var(--text)">0.00342 BTC</span></span>
+            <span>Fee: 0.5%</span>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="executeSell()">Confirm Sale</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Your Holdings</div>
+          <div id="sellHoldings" style="padding:10px 0;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEND PAGE -->
+    <div class="page" id="page-send">
+      <div class="section-title">Send Bitcoin</div>
+      <div class="section-sub">Transfer BTC to any wallet address</div>
+      <div class="grid-2">
+        <div class="card">
+          <label class="input-label">Recipient BTC Address</label>
+          <input class="input" id="sendAddr" placeholder="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh">
+          <label class="input-label">Amount (BTC)</label>
+          <input class="input" id="sendAmount" type="number" placeholder="0.001" step="0.0001">
+          <label class="input-label">Note (optional)</label>
+          <textarea class="input" id="sendNote" placeholder="What is this for?"></textarea>
+          <button class="btn btn-primary btn-full" onclick="executeSend()">Send Bitcoin</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Network Info</div>
+          <div style="display:grid; gap:12px; font-size:14px;">
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted)">Network</span><span>Bitcoin (BTC)</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted)">Network Fee</span><span>~0.00005 BTC</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted)">Confirmation</span><span>~10 mins</span></div>
+            <div style="display:flex; justify-content:space-between;"><span style="color:var(--muted)">Your Balance</span><span id="sendBal" style="color:var(--gold)">0.00342 BTC</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECEIVE PAGE -->
+    <div class="page" id="page-receive">
+      <div class="section-title">Receive Bitcoin</div>
+      <div class="section-sub">Share your address to receive BTC</div>
+      <div class="card" style="max-width:480px; margin:0 auto; text-align:center;">
+        <div style="font-size:13px; color:var(--muted); margin-bottom:16px;">Your Bitcoin Deposit Address</div>
+        <div id="qrCode" style="margin:20px auto; width:160px; height:160px; background:white; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:60px;">₿</div>
+        <div class="wallet-address" id="receiveAddr">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+        <button class="btn btn-primary" style="margin-top:16px;" onclick="copyAddress()">Copy Address</button>
+        <div style="margin-top:20px; font-size:12px; color:var(--muted); line-height:1.7;">
+          ⚠️ Only send Bitcoin (BTC) to this address.<br>Sending any other cryptocurrency will result in permanent loss.
+        </div>
+      </div>
+    </div>
+
+    <!-- DEPOSIT PAGE -->
+    <div class="page" id="page-deposit">
+      <div class="section-title">Deposit USD</div>
+      <div class="section-sub">Fund your Koker Bank account</div>
+      <div class="grid-2">
+        <div class="card">
+          <div style="display:grid; gap:12px; margin-bottom:20px;">
+            <button class="btn btn-ghost" id="depMethodCard" onclick="selectDepMethod('card')" style="text-align:left; padding:16px;">💳 &nbsp;Debit / Credit Card</button>
+            <button class="btn btn-ghost" id="depMethodBank" onclick="selectDepMethod('bank')" style="text-align:left; padding:16px;">🏦 &nbsp;Bank Transfer</button>
+            <button class="btn btn-ghost" id="depMethodCrypto" onclick="selectDepMethod('crypto')" style="text-align:left; padding:16px;">₿ &nbsp;Crypto Deposit</button>
+          </div>
+          <label class="input-label">Amount (USD)</label>
+          <input class="input" id="depositAmount" type="number" placeholder="500" value="500">
+          <button class="btn btn-primary btn-full" onclick="executeDeposit()">Deposit Funds</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Deposit Summary</div>
+          <div id="depositInfo" style="font-size:14px; color:var(--muted); line-height:2;">
+            <div>Method: <span style="color:var(--text)">Debit Card</span></div>
+            <div>Processing Time: <span style="color:var(--text)">Instant</span></div>
+            <div>Min Deposit: <span style="color:var(--text)">$10</span></div>
+            <div>Max Deposit: <span style="color:var(--text)">$50,000</span></div>
+            <div>Fee: <span style="color:var(--green)">Free</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WITHDRAW PAGE -->
+    <div class="page" id="page-withdraw">
+      <div class="section-title">Withdraw USD</div>
+      <div class="section-sub">Withdraw funds to your bank account</div>
+      <div class="grid-2">
+        <div class="card">
+          <label class="input-label">Bank Account (Last 4 digits)</label>
+          <input class="input" id="withdrawAcct" placeholder="e.g. 4242">
+          <label class="input-label">Amount (USD)</label>
+          <input class="input" id="withdrawAmount" type="number" placeholder="200">
+          <div style="font-size:12px; color:var(--muted); margin-bottom:16px;">Available: <span id="withdrawAvail" style="color:var(--text)">$2,450.00</span></div>
+          <button class="btn btn-primary btn-full" onclick="executeWithdraw()">Request Withdrawal</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Withdrawal Info</div>
+          <div style="font-size:14px; color:var(--muted); line-height:2.2;">
+            <div>Processing: <span style="color:var(--text)">1–3 Business Days</span></div>
+            <div>Min Amount: <span style="color:var(--text)">$20</span></div>
+            <div>Daily Limit: <span style="color:var(--text)">$10,000</span></div>
+            <div>Fee: <span style="color:var(--text)">$1.00 flat</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS PAGE -->
+    <div class="page" id="page-transactions">
+      <div class="section-title">Transaction History</div>
+      <div class="section-sub">All your account activity</div>
+      <div class="card">
+        <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+          <button class="btn btn-sm btn-primary" onclick="filterTx('all')">All</button>
+          <button class="btn btn-sm btn-ghost" onclick="filterTx('buy')">Buys</button>
+          <button class="btn btn-sm btn-ghost" onclick="filterTx('sell')">Sells</button>
+          <button class="btn btn-sm btn-ghost" onclick="filterTx('send')">Sends</button>
+          <button class="btn btn-sm btn-ghost" onclick="filterTx('deposit')">Deposits</button>
+        </div>
+        <div class="table-wrap">
+          <table id="fullTxTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PORTFOLIO PAGE -->
+    <div class="page" id="page-portfolio">
+      <div class="section-title">Portfolio</div>
+      <div class="section-sub">Track your crypto holdings and performance</div>
+      <div class="stat-grid" id="portfolioStats"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Holdings Breakdown</div>
+          <div id="holdingsBreakdown"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Performance (30d)</div>
+          <div class="chart-container">
+            <canvas id="portfolioChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KYC PAGE -->
+    <div class="page" id="page-kyc">
+      <div class="section-title">Identity Verification</div>
+      <div class="section-sub">Complete KYC to unlock all features</div>
+      <div style="max-width:560px;">
+        <div class="kyc-step" style="border-color:var(--green);">
+          <div class="kyc-num done">✓</div>
+          <div style="flex:1"><div style="font-weight:600;">Email Verified</div><div style="font-size:12px;color:var(--muted);">Your email has been confirmed</div></div>
+          <div class="badge green">COMPLETE</div>
+        </div>
+        <div class="kyc-step" style="border-color:var(--gold);">
+          <div class="kyc-num active">2</div>
+          <div style="flex:1"><div style="font-weight:600;">Government ID</div><div style="font-size:12px;color:var(--muted);">Passport, Driver's License, or National ID</div></div>
+          <button class="btn btn-sm btn-primary" onclick="simulateKyc()">Upload ID</button>
+        </div>
+        <div class="kyc-step">
+          <div class="kyc-num">3</div>
+          <div style="flex:1"><div style="font-weight:600;">Selfie Check</div><div style="font-size:12px;color:var(--muted);">Take a live selfie for face match</div></div>
+          <div class="badge muted">LOCKED</div>
+        </div>
+        <div class="kyc-step">
+          <div class="kyc-num">4</div>
+          <div style="flex:1"><div style="font-weight:600;">Proof of Address</div><div style="font-size:12px;color:var(--muted);">Bank statement or utility bill</div></div>
+          <div class="badge muted">LOCKED</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS PAGE -->
+    <div class="page" id="page-notifications">
+      <div class="section-title">Notifications</div>
+      <div class="section-sub">Stay updated on your account activity</div>
+      <div class="card" id="notifList"></div>
+    </div>
+
+    <!-- SETTINGS PAGE -->
+    <div class="page" id="page-settings">
+      <div class="section-title">Account Settings</div>
+      <div class="section-sub">Manage your profile and preferences</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Profile Information</div>
+          <label class="input-label">Full Name</label>
+          <input class="input" id="settingsName" placeholder="John Doe">
+          <label class="input-label">Email</label>
+          <input class="input" id="settingsEmail" placeholder="you@example.com" readonly>
+          <label class="input-label">Phone</label>
+          <input class="input" id="settingsPhone" placeholder="+1 555 000 0000">
+          <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Security</div>
+          <div style="display:grid; gap:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px;">
+              <div><div style="font-weight:600;">Two-Factor Auth</div><div style="font-size:12px;color:var(--muted)">Protect your account</div></div>
+              <button class="toggle on" id="tfa-toggle" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px;">
+              <div><div style="font-weight:600;">Email Alerts</div><div style="font-size:12px;color:var(--muted)">Transaction notifications</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px;">
+              <div><div style="font-weight:600;">Login Alerts</div><div style="font-size:12px;color:var(--muted)">New device notifications</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== ADMIN PAGES ===================== -->
+
+    <!-- ADMIN DASHBOARD -->
+    <div class="page" id="page-admin-dashboard">
+      <div style="display:inline-flex; align-items:center; gap:10px; margin-bottom:24px;">
+        <div class="badge red" style="font-size:13px; padding:6px 14px;">ADMIN PANEL</div>
+        <span style="color:var(--muted); font-size:14px;">Full system control</span>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value gold" id="adminUserCount">5</div>
+          <div class="stat-change up">+2 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">₿</div>
+          <div class="stat-label">Platform BTC</div>
+          <div class="stat-value">0.18420</div>
+          <div class="stat-change up">≈ $12,410</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💵</div>
+          <div class="stat-label">Total USD Held</div>
+          <div class="stat-value green" id="adminTotalUsd">$24,500</div>
+          <div class="stat-change up">All user balances</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-label">Total Transactions</div>
+          <div class="stat-value" id="adminTxCount">0</div>
+          <div class="stat-change">Platform-wide</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-label">Pending KYC</div>
+          <div class="stat-value red">2</div>
+          <div class="stat-change down">Needs review</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Fees Collected</div>
+          <div class="stat-value gold">$341.20</div>
+          <div class="stat-change up">This month</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recent Platform Activity</div>
+        <div class="table-wrap">
+          <table id="adminActivityTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN USER MANAGEMENT -->
+    <div class="page" id="page-admin-users">
+      <div class="section-title">User Management</div>
+      <div class="section-sub">View and control all user accounts</div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+          <input class="input" id="userSearch" placeholder="Search users..." oninput="renderAdminUsers()" style="max-width:280px; margin:0;">
+          <button class="btn btn-primary" onclick="showAddUserModal()">+ Add User</button>
+        </div>
+        <div class="table-wrap">
+          <table id="adminUsersTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN USER DETAIL -->
+    <div class="page" id="page-admin-user-detail">
+      <button class="btn btn-ghost btn-sm" onclick="showPage('admin-users')" style="margin-bottom:20px;">← Back to Users</button>
+      <div id="adminUserDetail"></div>
+    </div>
+
+    <!-- ADMIN TRANSACTIONS -->
+    <div class="page" id="page-admin-transactions">
+      <div class="section-title">All Transactions</div>
+      <div class="section-sub">Every transaction across all users</div>
+      <div class="card">
+        <div class="table-wrap">
+          <table id="adminAllTxTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN BALANCES -->
+    <div class="page" id="page-admin-balances">
+      <div class="section-title">Balance Control</div>
+      <div class="section-sub">Adjust user balances directly</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Adjust User Balance</div>
+          <label class="input-label">Select User</label>
+          <select class="input" id="balUserSelect" onchange="loadUserBalance()">
+            <option value="">-- Select User --</option>
+          </select>
+          <div id="currentBalDisplay" style="margin-bottom:16px; display:none;">
+            <div style="display:flex; gap:16px; margin-bottom:16px;">
+              <div class="stat-card" style="flex:1; padding:14px;">
+                <div class="stat-label">USD</div>
+                <div class="stat-value green" id="adjUsdCurrent">$0</div>
+              </div>
+              <div class="stat-card" style="flex:1; padding:14px;">
+                <div class="stat-label">BTC</div>
+                <div class="stat-value gold" id="adjBtcCurrent">0.000</div>
+              </div>
+            </div>
+          </div>
+          <label class="input-label">Adjustment Type</label>
+          <select class="input" id="balType">
+            <option value="usd_add">Add USD</option>
+            <option value="usd_sub">Remove USD</option>
+            <option value="btc_add">Add BTC</option>
+            <option value="btc_sub">Remove BTC</option>
+            <option value="usd_set">Set USD (exact)</option>
+            <option value="btc_set">Set BTC (exact)</option>
+          </select>
+          <label class="input-label">Amount</label>
+          <input class="input" id="balAmount" type="number" placeholder="100">
+          <label class="input-label">Reason (internal note)</label>
+          <textarea class="input" id="balReason" placeholder="Admin credit, bonus, correction..."></textarea>
+          <button class="btn btn-primary btn-full" onclick="executeBalAdj()">Apply Adjustment</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Balance Ledger</div>
+          <div class="table-wrap">
+            <table id="balLedgerTable"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN KYC -->
+    <div class="page" id="page-admin-kyc">
+      <div class="section-title">KYC Review</div>
+      <div class="section-sub">Review and approve user identity verifications</div>
+      <div class="card">
+        <div class="table-wrap">
+          <table id="adminKycTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN SETTINGS -->
+    <div class="page" id="page-admin-settings">
+      <div class="section-title">Platform Settings</div>
+      <div class="section-sub">Configure platform-wide settings</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Trading Controls</div>
+          <div style="display:grid; gap:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px;">
+              <div><div style="font-weight:600;">Trading Enabled</div><div style="font-size:12px;color:var(--muted)">Allow buy/sell for all users</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on'); showToast('Trading status updated','success')"></button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px;">
+              <div><div style="font-weight:600;">New Registrations</div><div style="font-size:12px;color:var(--muted)">Accept new signups</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on'); showToast('Registration status updated','success')"></button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px;">
+              <div><div style="font-weight:600;">Withdrawals</div><div style="font-size:12px;color:var(--muted)">Allow user withdrawals</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on'); showToast('Withdrawal status updated','success')"></button>
+            </div>
+          </div>
+          <div class="separator"></div>
+          <div class="card-title" style="margin-bottom:14px;">Fee Settings</div>
+          <label class="input-label">Trading Fee (%)</label>
+          <input class="input" id="tradeFee" value="0.5" type="number" step="0.1">
+          <label class="input-label">Withdrawal Fee (USD)</label>
+          <input class="input" id="withdrawFee" value="1.00" type="number" step="0.5">
+          <button class="btn btn-primary" onclick="showToast('Settings saved','success')">Save Settings</button>
+        </div>
+        <div class="card">
+          <div class="card-title">System Info</div>
+          <div style="font-size:14px; color:var(--muted); line-height:2.5;">
+            <div>Platform: <span style="color:var(--text)">Koker Bank v1.0</span></div>
+            <div>Mode: <span style="color:var(--gold)">Demo / Sandbox</span></div>
+            <div>Database: <span style="color:var(--text)">In-Memory Store</span></div>
+            <div>API: <span style="color:var(--green)">Online</span></div>
+            <div>BTC Feed: <span style="color:var(--green)">Simulated Live</span></div>
+            <div>Total Storage: <span style="color:var(--text)">localStorage</span></div>
+          </div>
+          <div class="separator"></div>
+          <button class="btn btn-danger" onclick="if(confirm('Reset ALL demo data?')){resetDB(); showToast('Database reset','success')}">⚠️ Reset Demo Database</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app -->
+
+<!-- Add User Modal -->
+<div class="modal-overlay" id="addUserModal" style="display:none" onclick="closeModalOutside(event,'addUserModal')">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal('addUserModal')">×</button>
+    <div class="modal-title">ADD USER</div>
+    <div class="modal-sub">Create a new user account</div>
+    <div class="form-row">
+      <div class="form-group"><label>First Name</label><input id="auFirst" type="text" placeholder="John"></div>
+      <div class="form-group"><label>Last Name</label><input id="auLast" type="text" placeholder="Doe"></div>
+    </div>
+    <div class="form-group"><label>Email</label><input id="auEmail" type="email" placeholder="user@example.com"></div>
+    <div class="form-group"><label>Initial USD Balance</label><input id="auUsd" type="number" placeholder="1000" value="1000"></div>
+    <div class="form-group"><label>Initial BTC Balance</label><input id="auBtc" type="number" placeholder="0.001" step="0.0001" value="0.001"></div>
+    <button class="btn-gold btn-full" onclick="adminAddUser()">Create User</button>
+  </div>
+</div>
+
+<script>
+// =================== FAKE BACKEND (In-Memory Store) ===================
+const DB = {
+  users: [
+    { id: 1, firstName: 'Admin', lastName: 'Koker', email: 'admin@koker.bank', password: 'admin123', role: 'admin', usdBalance: 99999, btcBalance: 1.0, status: 'active', kycStatus: 'verified', phone: '+234 800 000 0001', createdAt: '2024-01-01', address: 'bc1qadmin000000000000000000000000000000000' },
+    { id: 2, firstName: 'John', lastName: 'Mensah', email: 'user@koker.bank', password: 'pass123', role: 'user', usdBalance: 2450, btcBalance: 0.00342, status: 'active', kycStatus: 'pending', phone: '+234 800 123 4567', createdAt: '2024-06-12', address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh' },
+    { id: 3, firstName: 'Amara', lastName: 'Osei', email: 'amara@example.com', password: 'demo123', role: 'user', usdBalance: 8750, btcBalance: 0.05120, status: 'active', kycStatus: 'verified', phone: '+233 50 000 0001', createdAt: '2024-07-03', address: 'bc1qamara000000000000000000000000000000000' },
+    { id: 4, firstName: 'Kwame', lastName: 'Boateng', email: 'kwame@example.com', password: 'demo123', role: 'user', usdBalance: 1200, btcBalance: 0.00850, status: 'suspended', kycStatus: 'pending', phone: '+233 50 000 0002', createdAt: '2024-08-15', address: 'bc1qkwame000000000000000000000000000000000' },
+    { id: 5, firstName: 'Fatima', lastName: 'Diallo', email: 'fatima@example.com', password: 'demo123', role: 'user', usdBalance: 12100, btcBalance: 0.12000, status: 'active', kycStatus: 'verified', phone: '+221 77 000 0001', createdAt: '2024-09-01', address: 'bc1qfatima00000000000000000000000000000000' },
+  ],
+  transactions: [
+    { id: 't001', userId: 2, type: 'deposit', amount: 1000, currency: 'USD', status: 'complete', note: 'Initial deposit', date: '2024-06-13', btcPrice: null },
+    { id: 't002', userId: 2, type: 'buy', amount: 0.002, currency: 'BTC', usdSpent: 130, status: 'complete', note: 'Market buy', date: '2024-06-14', btcPrice: 65000 },
+    { id: 't003', userId: 2, type: 'buy', amount: 0.00142, currency: 'BTC', usdSpent: 90, status: 'complete', note: 'Market buy', date: '2024-06-20', btcPrice: 63380 },
+    { id: 't004', userId: 3, type: 'deposit', amount: 5000, currency: 'USD', status: 'complete', note: 'Wire transfer', date: '2024-07-04', btcPrice: null },
+    { id: 't005', userId: 3, type: 'buy', amount: 0.05120, currency: 'BTC', usdSpent: 3300, status: 'complete', note: 'Market buy', date: '2024-07-05', btcPrice: 64453 },
+    { id: 't006', userId: 5, type: 'deposit', amount: 10000, currency: 'USD', status: 'complete', note: 'Bank wire', date: '2024-09-02', btcPrice: null },
+    { id: 't007', userId: 5, type: 'buy', amount: 0.12, currency: 'BTC', usdSpent: 7800, status: 'complete', note: 'Market buy', date: '2024-09-03', btcPrice: 65000 },
+  ],
+  balanceLedger: [],
+  notifications: [
+    { id: 'n1', userId: 2, type: 'info', msg: 'Welcome to Koker Bank! Complete your KYC to unlock all features.', date: '2024-06-12', read: false },
+    { id: 'n2', userId: 2, type: 'success', msg: 'Deposit of $1,000.00 received successfully.', date: '2024-06-13', read: false },
+    { id: 'n3', userId: 2, type: 'info', msg: 'Bitcoin price alert: BTC crossed $65,000.', date: '2024-06-20', read: false },
+  ],
+  settings: { tradingEnabled: true, registrationsOpen: true, withdrawalsEnabled: true, tradeFee: 0.5, withdrawFee: 1 },
+  btcPrice: 67420,
+  nextId: 6,
+  nextTxId: 8,
+};
+
+let currentUser = null;
+let selectedDepMethod = 'card';
+
+// =================== AUTH ===================
+function login() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const user = DB.users.find(u => u.email === email && u.password === pass);
+  if (!user) { showToast('Invalid credentials','error'); return; }
+  if (user.status === 'suspended') { showToast('Account suspended. Contact support.','error'); return; }
+  currentUser = user;
+  closeModal('loginModal');
+  initApp();
+}
+
+function register() {
+  const first = document.getElementById('regFirst').value.trim();
+  const last = document.getElementById('regLast').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const pass = document.getElementById('regPass').value;
+  if (!first || !email || !pass) { showToast('Fill in all required fields','error'); return; }
+  if (DB.users.find(u => u.email === email)) { showToast('Email already registered','error'); return; }
+  const newUser = {
+    id: DB.nextId++, firstName: first, lastName: last, email, password: pass, phone,
+    role: 'user', usdBalance: 0, btcBalance: 0, status: 'active',
+    kycStatus: 'unverified', createdAt: new Date().toISOString().split('T')[0],
+    address: 'bc1q' + Math.random().toString(36).substr(2, 38)
+  };
+  DB.users.push(newUser);
+  DB.notifications.push({ id: 'n'+Date.now(), userId: newUser.id, type: 'info', msg: `Welcome ${first}! Your account is ready.`, date: new Date().toISOString().split('T')[0], read: false });
+  currentUser = newUser;
+  closeModal('registerModal');
+  initApp();
+  showToast('Account created! Welcome to Koker Bank 🎉','success');
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('landing').style.display = 'flex';
+}
+
+// =================== APP INIT ===================
+function initApp() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  const isAdmin = currentUser.role === 'admin';
+  document.getElementById('sidebarRole').textContent = isAdmin ? 'ADMIN ACCOUNT' : 'USER ACCOUNT';
+  document.getElementById('sidebarAvatar').textContent = currentUser.firstName[0] + currentUser.lastName[0];
+  document.getElementById('sidebarName').textContent = currentUser.firstName + ' ' + currentUser.lastName;
+  document.getElementById('sidebarEmail').textContent = currentUser.email;
+  document.getElementById('welcomeName').textContent = currentUser.firstName;
+
+  buildNav(isAdmin);
+
+  if (isAdmin) {
+    showPage('admin-dashboard');
+    renderAdminDashboard();
+    populateBalUserSelect();
+    renderBalanceLedger();
+    renderAdminKyc();
+  } else {
+    showPage('dashboard');
+    updateDashboard();
+    renderTransactions('recentTxTable', 5);
+    renderTransactions('fullTxTable');
+    renderPortfolio();
+    renderNotifications();
+  }
+  renderAdminUsers();
+  renderAdminTransactions();
+  initCharts();
+  startPriceSimulation();
+}
+
+function buildNav(isAdmin) {
+  const nav = document.getElementById('sidebarNav');
+  nav.innerHTML = '';
+  if (!isAdmin) {
+    const userNav = [
+      { section: 'Account' },
+      { icon: '🏠', label: 'Dashboard', page: 'dashboard' },
+      { icon: '📊', label: 'Portfolio', page: 'portfolio' },
+      { icon: '📋', label: 'Transactions', page: 'transactions' },
+      { section: 'Trading' },
+      { icon: '₿', label: 'Buy Bitcoin', page: 'buy' },
+      { icon: '💰', label: 'Sell Bitcoin', page: 'sell' },
+      { icon: '↑', label: 'Send BTC', page: 'send' },
+      { icon: '↓', label: 'Receive BTC', page: 'receive' },
+      { section: 'Funds' },
+      { icon: '+', label: 'Deposit', page: 'deposit' },
+      { icon: '−', label: 'Withdraw', page: 'withdraw' },
+      { section: 'More' },
+      { icon: '🔐', label: 'KYC Verify', page: 'kyc' },
+      { icon: '🔔', label: 'Notifications', page: 'notifications' },
+      { icon: '⚙️', label: 'Settings', page: 'settings' },
+    ];
+    renderNavItems(nav, userNav);
+  } else {
+    const adminNav = [
+      { section: 'Overview' },
+      { icon: '🏠', label: 'Admin Dashboard', page: 'admin-dashboard' },
+      { section: 'Users' },
+      { icon: '👥', label: 'All Users', page: 'admin-users' },
+      { icon: '💸', label: 'Balance Control', page: 'admin-balances' },
+      { icon: '🔐', label: 'KYC Review', page: 'admin-kyc' },
+      { section: 'Platform' },
+      { icon: '📋', label: 'All Transactions', page: 'admin-transactions' },
+      { icon: '⚙️', label: 'Platform Settings', page: 'admin-settings' },
+    ];
+    renderNavItems(nav, adminNav);
+  }
+}
+
+function renderNavItems(nav, items) {
+  items.forEach(item => {
+    if (item.section) {
+      const s = document.createElement('div');
+      s.className = 'nav-section'; s.textContent = item.section;
+      nav.appendChild(s);
+    } else {
+      const el = document.createElement('div');
+      el.className = 'nav-item';
+      el.dataset.page = item.page;
+      el.innerHTML = `<span class="nav-icon">${item.icon}</span>${item.label}`;
+      el.onclick = () => showPage(item.page);
+      nav.appendChild(el);
+    }
+  });
+}
+
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-' + pageId);
+  if (pg) pg.classList.add('active');
+  const navItem = document.querySelector(`[data-page="${pageId}"]`);
+  if (navItem) navItem.classList.add('active');
+  const titles = {
+    'dashboard': 'Dashboard', 'portfolio': 'Portfolio', 'transactions': 'Transactions',
+    'buy': 'Buy Bitcoin', 'sell': 'Sell Bitcoin', 'send': 'Send Bitcoin', 'receive': 'Receive Bitcoin',
+    'deposit': 'Deposit', 'withdraw': 'Withdraw', 'kyc': 'KYC Verification',
+    'notifications': 'Notifications', 'settings': 'Settings',
+    'admin-dashboard': 'Admin Dashboard', 'admin-users': 'User Management',
+    'admin-balances': 'Balance Control', 'admin-kyc': 'KYC Review',
+    'admin-transactions': 'All Transactions', 'admin-settings': 'Platform Settings',
+    'admin-user-detail': 'User Detail',
+  };
+  document.getElementById('topBarTitle').textContent = titles[pageId] || pageId;
+
+  if (pageId === 'sell') renderSellPage();
+  if (pageId === 'portfolio') renderPortfolio();
+  if (pageId === 'send') document.getElementById('sendBal').textContent = currentUser.btcBalance.toFixed(8) + ' BTC';
+  if (pageId === 'receive') document.getElementById('receiveAddr').textContent = currentUser.address;
+  if (pageId === 'settings') loadSettings();
+  if (pageId === 'transactions') renderTransactions('fullTxTable');
+  if (pageId === 'notifications') renderNotifications();
+  if (pageId === 'admin-users') renderAdminUsers();
+  if (pageId === 'admin-transactions') renderAdminTransactions();
+  if (pageId === 'admin-balances') { populateBalUserSelect(); renderBalanceLedger(); }
+  if (pageId === 'admin-kyc') renderAdminKyc();
+}
+
+// =================== DASHBOARD ===================
+function updateDashboard() {
+  if (!currentUser) return;
+  const u = DB.users.find(u => u.id === currentUser.id);
+  currentUser = u;
+  const btcUsd = u.btcBalance * DB.btcPrice;
+  const total = u.usdBalance + btcUsd;
+  document.getElementById('dashBtcBal').textContent = u.btcBalance.toFixed(8);
+  document.getElementById('dashBtcUsd').textContent = `≈ $${btcUsd.toFixed(2)} USD`;
+  document.getElementById('dashUsdBal').textContent = `$${u.usdBalance.toFixed(2)}`;
+  document.getElementById('dashTotal').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('buyAvailUsd').textContent = `$${u.usdBalance.toFixed(2)}`;
+  document.getElementById('sellAvailBtc').textContent = `${u.btcBalance.toFixed(8)} BTC`;
+  document.getElementById('withdrawAvail').textContent = `$${u.usdBalance.toFixed(2)}`;
+  const txCount = DB.transactions.filter(t => t.userId === currentUser.id).length;
+  document.getElementById('dashTxCount').textContent = txCount;
+}
+
+// =================== BUY ===================
+function calcBuy() {
+  const usd = parseFloat(document.getElementById('buyUsdAmount').value) || 0;
+  const fee = usd * 0.005;
+  const net = usd - fee;
+  const btc = net / DB.btcPrice;
+  document.getElementById('buyBtcReceive').value = btc > 0 ? btc.toFixed(8) : '';
+  document.getElementById('buyPreview').innerHTML = usd > 0 ? `
+    <div style="font-size:14px; line-height:2.5; color:var(--muted);">
+      <div>Amount: <span style="color:var(--text)">$${usd.toFixed(2)}</span></div>
+      <div>Platform Fee (0.5%): <span style="color:var(--red)">-$${fee.toFixed(2)}</span></div>
+      <div>Net: <span style="color:var(--text)">$${net.toFixed(2)}</span></div>
+      <div>BTC Price: <span style="color:var(--text)">$${DB.btcPrice.toLocaleString()}</span></div>
+      <div style="border-top:1px solid var(--border); padding-top:10px; margin-top:6px;">
+        You receive: <span style="color:var(--gold); font-family:'Space Mono',monospace; font-size:16px;">${btc.toFixed(8)} BTC</span>
+      </div>
+    </div>
+  ` : '<div style="color:var(--muted); font-size:14px; text-align:center; padding:40px 0;">Enter an amount to see order details</div>';
+}
+
+function executeBuy() {
+  const usd = parseFloat(document.getElementById('buyUsdAmount').value) || 0;
+  const u = DB.users.find(u => u.id === currentUser.id);
+  if (usd < 1) { showToast('Minimum buy is $1','error'); return; }
+  if (u.usdBalance < usd) { showToast('Insufficient USD balance','error'); return; }
+  const fee = usd * 0.005;
+  const net = usd - fee;
+  const btc = net / DB.btcPrice;
+  u.usdBalance -= usd;
+  u.btcBalance += btc;
+  DB.transactions.push({ id: 't' + DB.nextTxId++, userId: u.id, type: 'buy', amount: btc, currency: 'BTC', usdSpent: usd, status: 'complete', note: 'Market buy', date: new Date().toISOString().split('T')[0], btcPrice: DB.btcPrice });
+  addNotif(u.id, 'success', `Purchased ${btc.toFixed(8)} BTC for $${usd.toFixed(2)}`);
+  updateDashboard();
+  renderTransactions('recentTxTable', 5);
+  showToast(`Bought ${btc.toFixed(6)} BTC ✓`, 'success');
+  document.getElementById('buyUsdAmount').value = '';
+  document.getElementById('buyBtcReceive').value = '';
+}
+
+// =================== SELL ===================
+function renderSellPage() {
+  if (!currentUser) return;
+  const u = DB.users.find(u => u.id === currentUser.id);
+  document.getElementById('sellAvailBtc').textContent = u.btcBalance.toFixed(8) + ' BTC';
+  document.getElementById('sellHoldings').innerHTML = `
+    <div style="font-size:14px; line-height:2.5; color:var(--muted);">
+      <div>BTC Balance: <span style="color:var(--gold); font-family:'Space Mono',monospace;">${u.btcBalance.toFixed(8)}</span></div>
+      <div>Current Price: <span style="color:var(--text)">$${DB.btcPrice.toLocaleString()}</span></div>
+      <div>BTC Value: <span style="color:var(--green)">$${(u.btcBalance * DB.btcPrice).toFixed(2)}</span></div>
+    </div>`;
+}
+
+function calcSell() {
+  const btc = parseFloat(document.getElementById('sellBtcAmount').value) || 0;
+  const usd = btc * DB.btcPrice * 0.995;
+  document.getElementById('sellUsdReceive').value = btc > 0 ? '$' + usd.toFixed(2) : '';
+}
+
+function executeSell() {
+  const btc = parseFloat(document.getElementById('sellBtcAmount').value) || 0;
+  const u = DB.users.find(u => u.id === currentUser.id);
+  if (btc <= 0) { showToast('Enter a valid BTC amount','error'); return; }
+  if (u.btcBalance < btc) { showToast('Insufficient BTC balance','error'); return; }
+  const usd = btc * DB.btcPrice * 0.995;
+  u.btcBalance -= btc;
+  u.usdBalance += usd;
+  DB.transactions.push({ id: 't' + DB.nextTxId++, userId: u.id, type: 'sell', amount: usd, currency: 'USD', btcSold: btc, status: 'complete', note: 'Market sell', date: new Date().toISOString().split('T')[0], btcPrice: DB.btcPrice });
+  addNotif(u.id, 'success', `Sold ${btc.toFixed(8)} BTC for $${usd.toFixed(2)}`);
+  updateDashboard();
+  renderTransactions('recentTxTable', 5);
+  showToast(`Sold ${btc} BTC → $${usd.toFixed(2)} ✓`, 'success');
+  document.getElementById('sellBtcAmount').value = '';
+  document.getElementById('sellUsdReceive').value = '';
+}
+
+// =================== SEND ===================
+function executeSend() {
+  const addr = document.getElementById('sendAddr').value.trim();
+  const btc = parseFloat(document.getElementById('sendAmount').value) || 0;
+  const note = document.getElementById('sendNote').value;
+  const u = DB.users.find(u => u.id === currentUser.id);
+  if (!addr) { showToast('Enter recipient address','error'); return; }
+  if (btc <= 0) { showToast('Enter valid amount','error'); return; }
+  if (u.btcBalance < btc + 0.00005) { showToast('Insufficient BTC (including network fee)','error'); return; }
+  u.btcBalance -= (btc + 0.00005);
+  DB.transactions.push({ id: 't' + DB.nextTxId++, userId: u.id, type: 'send', amount: btc, currency: 'BTC', status: 'complete', note: note || `To: ${addr.substr(0,12)}...`, date: new Date().toISOString().split('T')[0], btcPrice: DB.btcPrice });
+  addNotif(u.id, 'info', `Sent ${btc} BTC to ${addr.substr(0,16)}...`);
+  updateDashboard();
+  showToast(`Sent ${btc} BTC ✓`,'success');
+  document.getElementById('sendAddr').value = '';
+  document.getElementById('sendAmount').value = '';
+  document.getElementById('sendNote').value = '';
+}
+
+// =================== DEPOSIT ===================
+function selectDepMethod(method) {
+  selectedDepMethod = method;
+  ['card','bank','crypto'].forEach(m => {
+    document.getElementById('depMethod' + m.charAt(0).toUpperCase() + m.slice(1))
+      .classList.toggle('btn-primary', m === method);
+    document.getElementById('depMethod' + m.charAt(0).toUpperCase() + m.slice(1))
+      .classList.toggle('btn-ghost', m !== method);
+  });
+}
+
+function executeDeposit() {
+  const amount = parseFloat(document.getElementById('depositAmount').value) || 0;
+  if (amount < 10) { showToast('Minimum deposit is $10','error'); return; }
+  const u = DB.users.find(u => u.id === currentUser.id);
+  u.usdBalance += amount;
+  DB.transactions.push({ id: 't' + DB.nextTxId++, userId: u.id, type: 'deposit', amount, currency: 'USD', status: 'complete', note: `${selectedDepMethod} deposit`, date: new Date().toISOString().split('T')[0], btcPrice: null });
+  addNotif(u.id, 'success', `Deposit of $${amount.toFixed(2)} received.`);
+  updateDashboard();
+  renderTransactions('recentTxTable', 5);
+  showToast(`$${amount} deposited ✓`,'success');
+}
+
+// =================== WITHDRAW ===================
+function executeWithdraw() {
+  const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+  const acct = document.getElementById('withdrawAcct').value.trim();
+  if (!acct) { showToast('Enter bank account digits','error'); return; }
+  if (amount < 20) { showToast('Minimum withdrawal is $20','error'); return; }
+  const u = DB.users.find(u => u.id === currentUser.id);
+  const total = amount + 1;
+  if (u.usdBalance < total) { showToast('Insufficient balance','error'); return; }
+  u.usdBalance -= total;
+  DB.transactions.push({ id: 't' + DB.nextTxId++, userId: u.id, type: 'withdrawal', amount, currency: 'USD', status: 'pending', note: `To account ***${acct}`, date: new Date().toISOString().split('T')[0], btcPrice: null });
+  addNotif(u.id, 'info', `Withdrawal of $${amount.toFixed(2)} is being processed.`);
+  updateDashboard();
+  renderTransactions('recentTxTable', 5);
+  showToast(`Withdrawal of $${amount} pending ✓`,'success');
+}
+
+// =================== TRANSACTIONS TABLE ===================
+function renderTransactions(tableId, limit) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const txs = DB.transactions.filter(t => t.userId === currentUser.id)
+    .sort((a,b) => b.id.localeCompare(a.id))
+    .slice(0, limit || 9999);
+
+  const icons = { buy:'₿', sell:'💰', send:'↑', deposit:'↓', withdrawal:'⬇', receive:'↓' };
+  const colors = { buy:'gold', sell:'green', send:'red', deposit:'green', withdrawal:'muted', receive:'blue' };
+
+  table.innerHTML = `<tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th><th>Note</th></tr>`;
+  txs.forEach(tx => {
+    const amt = tx.currency === 'BTC'
+      ? `<span style="color:var(--gold); font-family:'Space Mono',monospace;">${tx.amount > 0 ? '+' : ''}${tx.amount.toFixed(8)} BTC</span>`
+      : `<span style="color:var(--green);">${tx.amount > 0 ? '+' : ''}$${tx.amount.toFixed(2)}</span>`;
+    table.innerHTML += `<tr>
+      <td><span class="badge ${colors[tx.type]||'muted'}">${(icons[tx.type]||'◆')} ${tx.type.toUpperCase()}</span></td>
+      <td>${amt}</td>
+      <td><span class="badge ${tx.status === 'complete' ? 'green' : 'gold'}">${tx.status}</span></td>
+      <td style="color:var(--muted); font-size:13px;">${tx.date}</td>
+      <td style="color:var(--muted); font-size:13px;">${tx.note || '—'}</td>
+    </tr>`;
+  });
+  if (txs.length === 0) table.innerHTML += '<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:30px;">No transactions yet</td></tr>';
+}
+
+function filterTx(type) {
+  const table = document.getElementById('fullTxTable');
+  if (!table) return;
+  let txs = DB.transactions.filter(t => t.userId === currentUser.id);
+  if (type !== 'all') txs = txs.filter(t => t.type === type);
+  txs = txs.sort((a,b) => b.id.localeCompare(a.id));
+
+  table.innerHTML = `<tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th><th>Note</th></tr>`;
+  txs.forEach(tx => {
+    const amt = tx.currency === 'BTC'
+      ? `<span style="color:var(--gold); font-family:'Space Mono',monospace;">${tx.amount.toFixed(8)} BTC</span>`
+      : `$${tx.amount.toFixed(2)}`;
+    table.innerHTML += `<tr>
+      <td><span class="badge ${tx.type === 'buy' ? 'gold' : tx.type === 'sell' ? 'green' : tx.type === 'deposit' ? 'blue' : 'muted'}">${tx.type.toUpperCase()}</span></td>
+      <td>${amt}</td>
+      <td><span class="badge ${tx.status === 'complete' ? 'green' : 'gold'}">${tx.status}</span></td>
+      <td style="color:var(--muted); font-size:13px;">${tx.date}</td>
+      <td style="color:var(--muted); font-size:13px;">${tx.note || '—'}</td>
+    </tr>`;
+  });
+  if (txs.length === 0) table.innerHTML += '<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:30px;">No transactions found</td></tr>';
+}
+
+// =================== PORTFOLIO ===================
+function renderPortfolio() {
+  if (!currentUser) return;
+  const u = DB.users.find(u => u.id === currentUser.id);
+  const btcVal = u.btcBalance * DB.btcPrice;
+  const total = u.usdBalance + btcVal;
+  const btcPct = total > 0 ? (btcVal / total * 100).toFixed(1) : 0;
+  const usdPct = total > 0 ? (u.usdBalance / total * 100).toFixed(1) : 0;
+
+  document.getElementById('portfolioStats').innerHTML = `
+    <div class="stat-card"><div class="stat-icon">₿</div><div class="stat-label">BTC Holdings</div><div class="stat-value gold">${u.btcBalance.toFixed(8)}</div><div class="stat-change up">≈ $${btcVal.toFixed(2)}</div></div>
+    <div class="stat-card"><div class="stat-icon">💵</div><div class="stat-label">USD Cash</div><div class="stat-value green">$${u.usdBalance.toFixed(2)}</div><div class="stat-change">Available</div></div>
+    <div class="stat-card"><div class="stat-icon">💼</div><div class="stat-label">Total Value</div><div class="stat-value">$${total.toFixed(2)}</div><div class="stat-change up">All assets</div></div>
+  `;
+  document.getElementById('holdingsBreakdown').innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:6px;">
+        <span>₿ Bitcoin</span><span style="color:var(--gold);">${btcPct}%</span>
+      </div>
+      <div class="portfolio-bar"><div class="portfolio-fill" style="width:${btcPct}%"></div></div>
+    </div>
+    <div>
+      <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:6px;">
+        <span>💵 USD Cash</span><span style="color:var(--green);">${usdPct}%</span>
+      </div>
+      <div class="portfolio-bar"><div class="portfolio-fill" style="width:${usdPct}%; background: linear-gradient(90deg, #00D68F, #00ffbb);"></div></div>
+    </div>
+  `;
+}
+
+// =================== NOTIFICATIONS ===================
+function addNotif(userId, type, msg) {
+  DB.notifications.push({ id: 'n'+Date.now(), userId, type, msg, date: new Date().toISOString().split('T')[0], read: false });
+  const count = DB.notifications.filter(n => n.userId === currentUser?.id && !n.read).length;
+  document.getElementById('notifBadge').textContent = count;
+}
+
+function renderNotifications() {
+  const list = document.getElementById('notifList');
+  const notifs = DB.notifications.filter(n => n.userId === currentUser.id).reverse();
+  const icons = { success:'✅', info:'ℹ️', error:'❌', warning:'⚠️' };
+  list.innerHTML = notifs.map(n => {
+    n.read = true;
+    return `<div style="display:flex; gap:12px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--border);">
+      <span style="font-size:18px; margin-top:2px;">${icons[n.type]||'🔔'}</span>
+      <div style="flex:1;"><div style="font-size:14px;">${n.msg}</div><div style="font-size:11px; color:var(--muted); margin-top:4px;">${n.date}</div></div>
+    </div>`;
+  }).join('') || '<div style="text-align:center; color:var(--muted); padding:40px;">No notifications</div>';
+  document.getElementById('notifBadge').textContent = '0';
+}
+
+// =================== MISC ===================
+function copyAddress() {
+  navigator.clipboard.writeText(currentUser.address);
+  showToast('Address copied ✓','success');
+}
+
+function simulateKyc() {
+  const u = DB.users.find(u => u.id === currentUser.id);
+  u.kycStatus = 'pending_review';
+  showToast('ID submitted for review. You will be notified.','success');
+}
+
+function loadSettings() {
+  const u = DB.users.find(u => u.id === currentUser.id);
+  document.getElementById('settingsName').value = u.firstName + ' ' + u.lastName;
+  document.getElementById('settingsEmail').value = u.email;
+  document.getElementById('settingsPhone').value = u.phone || '';
+}
+
+function saveSettings() {
+  showToast('Settings saved ✓','success');
+}
+
+// =================== ADMIN ===================
+function renderAdminDashboard() {
+  const userCount = DB.users.filter(u => u.role !== 'admin').length;
+  document.getElementById('adminUserCount').textContent = userCount;
+  const totalUsd = DB.users.reduce((s,u) => s + u.usdBalance, 0);
+  document.getElementById('adminTotalUsd').textContent = '$' + totalUsd.toLocaleString();
+  document.getElementById('adminTxCount').textContent = DB.transactions.length;
+
+  const table = document.getElementById('adminActivityTable');
+  const recent = [...DB.transactions].reverse().slice(0,8);
+  table.innerHTML = `<tr><th>User</th><th>Type</th><th>Amount</th><th>Date</th><th>Status</th></tr>`;
+  recent.forEach(tx => {
+    const u = DB.users.find(u => u.id === tx.userId);
+    const name = u ? u.firstName + ' ' + u.lastName : 'Unknown';
+    table.innerHTML += `<tr>
+      <td>${name}</td>
+      <td><span class="badge ${tx.type==='buy'?'gold':tx.type==='sell'?'green':tx.type==='deposit'?'blue':'muted'}">${tx.type.toUpperCase()}</span></td>
+      <td style="font-family:'Space Mono',monospace; font-size:13px;">${tx.currency === 'BTC' ? tx.amount.toFixed(8)+' BTC' : '$'+tx.amount.toFixed(2)}</td>
+      <td style="color:var(--muted); font-size:13px;">${tx.date}</td>
+      <td><span class="badge ${tx.status==='complete'?'green':'gold'}">${tx.status}</span></td>
+    </tr>`;
+  });
+}
+
+function renderAdminUsers() {
+  const table = document.getElementById('adminUsersTable');
+  if (!table) return;
+  const query = (document.getElementById('userSearch')?.value || '').toLowerCase();
+  const users = DB.users.filter(u => u.role !== 'admin' && (
+    !query || u.firstName.toLowerCase().includes(query) || u.lastName.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)
+  ));
+
+  table.innerHTML = `<tr><th>User</th><th>Email</th><th>USD</th><th>BTC</th><th>KYC</th><th>Status</th><th>Actions</th></tr>`;
+  users.forEach(u => {
+    table.innerHTML += `<tr>
+      <td><div style="font-weight:600;">${u.firstName} ${u.lastName}</div><div style="font-size:11px;color:var(--muted);">ID: ${u.id}</div></td>
+      <td style="font-size:13px;">${u.email}</td>
+      <td style="font-family:'Space Mono',monospace; font-size:13px; color:var(--green);">$${u.usdBalance.toLocaleString()}</td>
+      <td style="font-family:'Space Mono',monospace; font-size:13px; color:var(--gold);">${u.btcBalance.toFixed(6)}</td>
+      <td><span class="badge ${u.kycStatus==='verified'?'green':u.kycStatus==='pending'?'gold':'muted'}">${u.kycStatus}</span></td>
+      <td><span class="badge ${u.status==='active'?'green':'red'}">${u.status}</span></td>
+      <td>
+        <div class="btn-row">
+          <button class="btn btn-sm btn-ghost" onclick="viewUserDetail(${u.id})">View</button>
+          <button class="btn btn-sm ${u.status==='active'?'btn-danger':'btn-success'}" onclick="toggleUserStatus(${u.id})">${u.status==='active'?'Suspend':'Activate'}</button>
+        </div>
+      </td>
+    </tr>`;
+  });
+  if (users.length === 0) table.innerHTML += '<tr><td colspan="7" style="text-align:center; color:var(--muted); padding:30px;">No users found</td></tr>';
+}
+
+function toggleUserStatus(uid) {
+  const u = DB.users.find(u => u.id === uid);
+  u.status = u.status === 'active' ? 'suspended' : 'active';
+  renderAdminUsers();
+  showToast(`User ${u.status === 'active' ? 'activated' : 'suspended'}`, u.status === 'active' ? 'success' : 'error');
+}
+
+function viewUserDetail(uid) {
+  const u = DB.users.find(u => u.id === uid);
+  const txs = DB.transactions.filter(t => t.userId === uid).slice(-5).reverse();
+  document.getElementById('adminUserDetail').innerHTML = `
+    <div class="stat-grid" style="margin-bottom:20px;">
+      <div class="stat-card"><div class="stat-label">USD Balance</div><div class="stat-value green">$${u.usdBalance.toLocaleString()}</div></div>
+      <div class="stat-card"><div class="stat-label">BTC Balance</div><div class="stat-value gold">${u.btcBalance.toFixed(8)}</div></div>
+      <div class="stat-card"><div class="stat-label">Account Status</div><div class="stat-value" style="color:${u.status==='active'?'var(--green)':'var(--red)'}">${u.status}</div></div>
+      <div class="stat-card"><div class="stat-label">KYC Status</div><div class="stat-value">${u.kycStatus}</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">User Profile</div>
+        <div style="font-size:14px; line-height:2.3; color:var(--muted);">
+          <div>Name: <span style="color:var(--text); font-weight:600;">${u.firstName} ${u.lastName}</span></div>
+          <div>Email: <span style="color:var(--text);">${u.email}</span></div>
+          <div>Phone: <span style="color:var(--text);">${u.phone || 'N/A'}</span></div>
+          <div>Joined: <span style="color:var(--text);">${u.createdAt}</span></div>
+          <div>Role: <span style="color:var(--text);">${u.role}</span></div>
+        </div>
+        <div class="separator"></div>
+        <div class="btn-row">
+          <button class="btn btn-sm ${u.status==='active'?'btn-danger':'btn-success'}" onclick="toggleUserStatus(${u.id}); viewUserDetail(${u.id})">${u.status==='active'?'Suspend Account':'Activate Account'}</button>
+          <button class="btn btn-sm btn-primary" onclick="showPage('admin-balances')">Adjust Balance</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Transactions</div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Type</th><th>Amount</th><th>Date</th></tr>
+            ${txs.map(tx => `<tr>
+              <td><span class="badge ${tx.type==='buy'?'gold':tx.type==='sell'?'green':'muted'}">${tx.type}</span></td>
+              <td style="font-size:13px; font-family:'Space Mono',monospace;">${tx.currency==='BTC'?tx.amount.toFixed(8)+' BTC':'$'+tx.amount.toFixed(2)}</td>
+              <td style="font-size:12px; color:var(--muted);">${tx.date}</td>
+            </tr>`).join('')}
+            ${txs.length===0?'<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:20px;">No transactions</td></tr>':''}
+          </table>
+        </div>
+      </div>
+    </div>`;
+  showPage('admin-user-detail');
+}
+
+function renderAdminTransactions() {
+  const table = document.getElementById('adminAllTxTable');
+  if (!table) return;
+  const txs = [...DB.transactions].reverse();
+  table.innerHTML = `<tr><th>User</th><th>Type</th><th>Amount</th><th>BTC Price</th><th>Status</th><th>Date</th><th>Note</th></tr>`;
+  txs.forEach(tx => {
+    const u = DB.users.find(u => u.id === tx.userId);
+    const name = u ? u.firstName + ' ' + u.lastName : 'Unknown';
+    table.innerHTML += `<tr>
+      <td style="font-size:13px;">${name}</td>
+      <td><span class="badge ${tx.type==='buy'?'gold':tx.type==='sell'?'green':tx.type==='deposit'?'blue':'muted'}">${tx.type.toUpperCase()}</span></td>
+      <td style="font-family:'Space Mono',monospace; font-size:12px;">${tx.currency==='BTC'?tx.amount.toFixed(8)+' BTC':'$'+tx.amount.toFixed(2)}</td>
+      <td style="font-size:12px; color:var(--muted);">${tx.btcPrice ? '$'+tx.btcPrice.toLocaleString() : '—'}</td>
+      <td><span class="badge ${tx.status==='complete'?'green':'gold'}">${tx.status}</span></td>
+      <td style="font-size:12px; color:var(--muted);">${tx.date}</td>
+      <td style="font-size:12px; color:var(--muted);">${tx.note||'—'}</td>
+    </tr>`;
+  });
+}
+
+// BALANCE CONTROL
+function populateBalUserSelect() {
+  const sel = document.getElementById('balUserSelect');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">-- Select User --</option>';
+  DB.users.filter(u => u.role !== 'admin').forEach(u => {
+    sel.innerHTML += `<option value="${u.id}">${u.firstName} ${u.lastName} (${u.email})</option>`;
+  });
+}
+
+function loadUserBalance() {
+  const uid = parseInt(document.getElementById('balUserSelect').value);
+  const display = document.getElementById('currentBalDisplay');
+  if (!uid) { display.style.display = 'none'; return; }
+  const u = DB.users.find(u => u.id === uid);
+  if (!u) return;
+  display.style.display = 'block';
+  document.getElementById('adjUsdCurrent').textContent = '$' + u.usdBalance.toFixed(2);
+  document.getElementById('adjBtcCurrent').textContent = u.btcBalance.toFixed(8);
+}
+
+function executeBalAdj() {
+  const uid = parseInt(document.getElementById('balUserSelect').value);
+  const type = document.getElementById('balType').value;
+  const amount = parseFloat(document.getElementById('balAmount').value) || 0;
+  const reason = document.getElementById('balReason').value || 'Admin adjustment';
+  if (!uid) { showToast('Select a user','error'); return; }
+  if (amount <= 0) { showToast('Enter valid amount','error'); return; }
+  const u = DB.users.find(u => u.id === uid);
+  let desc = '';
+  if (type === 'usd_add') { u.usdBalance += amount; desc = `+$${amount} USD`; }
+  else if (type === 'usd_sub') { u.usdBalance = Math.max(0, u.usdBalance - amount); desc = `-$${amount} USD`; }
+  else if (type === 'btc_add') { u.btcBalance += amount; desc = `+${amount} BTC`; }
+  else if (type === 'btc_sub') { u.btcBalance = Math.max(0, u.btcBalance - amount); desc = `-${amount} BTC`; }
+  else if (type === 'usd_set') { u.usdBalance = amount; desc = `Set $${amount} USD`; }
+  else if (type === 'btc_set') { u.btcBalance = amount; desc = `Set ${amount} BTC`; }
+  DB.balanceLedger.push({ user: u.firstName + ' ' + u.lastName, type: desc, reason, date: new Date().toISOString().split('T')[0] });
+  DB.transactions.push({ id: 't'+DB.nextTxId++, userId: u.id, type: 'admin_credit', amount: amount, currency: type.includes('btc') ? 'BTC' : 'USD', status: 'complete', note: reason, date: new Date().toISOString().split('T')[0], btcPrice: null });
+  addNotif(u.id, 'info', `Admin balance adjustment: ${desc}. Note: ${reason}`);
+  loadUserBalance();
+  renderBalanceLedger();
+  renderAdminDashboard();
+  showToast(`Balance adjusted: ${desc} ✓`,'success');
+}
+
+function renderBalanceLedger() {
+  const table = document.getElementById('balLedgerTable');
+  if (!table) return;
+  table.innerHTML = `<tr><th>User</th><th>Adjustment</th><th>Reason</th><th>Date</th></tr>`;
+  const entries = [...DB.balanceLedger].reverse();
+  entries.forEach(e => {
+    table.innerHTML += `<tr>
+      <td style="font-size:13px;">${e.user}</td>
+      <td style="font-family:'Space Mono',monospace; font-size:12px; color:var(--gold);">${e.type}</td>
+      <td style="font-size:12px; color:var(--muted);">${e.reason}</td>
+      <td style="font-size:12px; color:var(--muted);">${e.date}</td>
+    </tr>`;
+  });
+  if (entries.length === 0) table.innerHTML += '<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:20px;">No adjustments yet</td></tr>';
+}
+
+// KYC ADMIN
+function renderAdminKyc() {
+  const table = document.getElementById('adminKycTable');
+  if (!table) return;
+  const users = DB.users.filter(u => u.role !== 'admin');
+  table.innerHTML = `<tr><th>User</th><th>Email</th><th>KYC Status</th><th>Joined</th><th>Actions</th></tr>`;
+  users.forEach(u => {
+    table.innerHTML += `<tr>
+      <td>${u.firstName} ${u.lastName}</td>
+      <td style="font-size:13px;">${u.email}</td>
+      <td><span class="badge ${u.kycStatus==='verified'?'green':u.kycStatus==='pending'||u.kycStatus==='pending_review'?'gold':'muted'}">${u.kycStatus}</span></td>
+      <td style="font-size:13px; color:var(--muted);">${u.createdAt}</td>
+      <td>
+        <div class="btn-row">
+          <button class="btn btn-sm btn-success" onclick="setKyc(${u.id},'verified')">Approve</button>
+          <button class="btn btn-sm btn-danger" onclick="setKyc(${u.id},'rejected')">Reject</button>
+        </div>
+      </td>
+    </tr>`;
+  });
+}
+
+function setKyc(uid, status) {
+  const u = DB.users.find(u => u.id === uid);
+  u.kycStatus = status;
+  addNotif(u.id, status === 'verified' ? 'success' : 'error', `Your KYC has been ${status}.`);
+  renderAdminKyc();
+  showToast(`KYC ${status} for ${u.firstName}`, status === 'verified' ? 'success' : 'error');
+}
+
+// ADD USER MODAL
+function showAddUserModal() { document.getElementById('addUserModal').style.display = 'flex'; }
+function adminAddUser() {
+  const first = document.getElementById('auFirst').value.trim();
+  const last = document.getElementById('auLast').value.trim();
+  const email = document.getElementById('auEmail').value.trim();
+  const usd = parseFloat(document.getElementById('auUsd').value) || 0;
+  const btc = parseFloat(document.getElementById('auBtc').value) || 0;
+  if (!first || !email) { showToast('Fill in required fields','error'); return; }
+  if (DB.users.find(u => u.email === email)) { showToast('Email already exists','error'); return; }
+  DB.users.push({ id: DB.nextId++, firstName: first, lastName: last, email, password: 'demo123', role: 'user', usdBalance: usd, btcBalance: btc, status: 'active', kycStatus: 'unverified', phone: '', createdAt: new Date().toISOString().split('T')[0], address: 'bc1q'+Math.random().toString(36).substr(2,38) });
+  closeModal('addUserModal');
+  renderAdminUsers();
+  renderAdminDashboard();
+  showToast(`User ${first} created ✓`,'success');
+}
+
+function resetDB() {
+  DB.transactions = DB.transactions.filter(t => t.id.startsWith('t00'));
+  DB.balanceLedger = [];
+  DB.users.filter(u => u.role !== 'admin').forEach(u => { u.usdBalance = 0; u.btcBalance = 0; u.kycStatus = 'unverified'; });
+  renderAdminDashboard();
+  renderAdminUsers();
+  renderAdminTransactions();
+}
+
+// =================== MODALS ===================
+function showModal(type) {
+  document.getElementById(type === 'login' ? 'loginModal' : 'registerModal').style.display = 'flex';
+}
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function closeModalOutside(e, id) { if (e.target.classList.contains('modal-overlay')) closeModal(id); }
+function switchModal(closeId, openId) { closeModal(closeId); setTimeout(() => document.getElementById(openId).style.display = 'flex', 150); }
+
+// =================== TOAST ===================
+function showToast(msg, type = 'success') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// =================== PRICE SIMULATION ===================
+function startPriceSimulation() {
+  setInterval(() => {
+    const change = (Math.random() - 0.48) * 80;
+    DB.btcPrice = Math.max(50000, Math.min(100000, DB.btcPrice + change));
+    const el = document.getElementById('liveBtcPrice');
+    if (el) el.textContent = '$' + DB.btcPrice.toLocaleString(undefined, {maximumFractionDigits:0});
+    const buyEl = document.getElementById('buyBtcPrice');
+    if (buyEl) buyEl.textContent = '$' + DB.btcPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    updateDashboard();
+  }, 3000);
+}
+
+// =================== CHARTS ===================
+function initCharts() {
+  const ctx = document.getElementById('priceChart');
+  if (!ctx) return;
+
+  const prices = [];
+  let p = 64000;
+  for (let i = 0; i < 28; i++) {
+    p += (Math.random() - 0.47) * 600;
+    prices.push(Math.round(p));
+  }
+  const labels = [];
+  for (let i = 27; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    labels.push(d.toLocaleDateString('en',{month:'short',day:'numeric'}));
+  }
+
+  drawLineChart(ctx, labels, prices, '#F5A623', '#FFD166');
+
+  const pCtx = document.getElementById('portfolioChart');
+  if (pCtx) {
+    const pPrices = [];
+    let pp = 2200;
+    for (let i = 0; i < 30; i++) { pp += (Math.random() - 0.45) * 50; pPrices.push(Math.round(pp)); }
+    const pLabels = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      pLabels.push(d.toLocaleDateString('en',{month:'short',day:'numeric'}));
+    }
+    drawLineChart(pCtx, pLabels, pPrices, '#00D68F', '#00ffbb');
+  }
+}
+
+function drawLineChart(canvas, labels, data, color1, color2) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 600;
+  const H = canvas.offsetHeight || 180;
+  canvas.width = W; canvas.height = H;
+
+  const min = Math.min(...data) - 500;
+  const max = Math.max(...data) + 500;
+  const range = max - min;
+  const pad = { t: 10, b: 24, l: 10, r: 10 };
+  const W2 = W - pad.l - pad.r;
+  const H2 = H - pad.t - pad.b;
+
+  const x = i => pad.l + (i / (data.length - 1)) * W2;
+  const y = v => pad.t + H2 - ((v - min) / range) * H2;
+
+  // gradient fill
+  const grad = ctx.createLinearGradient(0, pad.t, 0, H2 + pad.t);
+  grad.addColorStop(0, color1 + '33');
+  grad.addColorStop(1, color1 + '00');
+
+  ctx.beginPath();
+  ctx.moveTo(x(0), y(data[0]));
+  for (let i = 1; i < data.length; i++) {
+    const xc = (x(i - 1) + x(i)) / 2;
+    const yc = (y(data[i - 1]) + y(data[i])) / 2;
+    ctx.quadraticCurveTo(x(i - 1), y(data[i - 1]), xc, yc);
+  }
+  ctx.quadraticCurveTo(x(data.length-2), y(data[data.length-2]), x(data.length-1), y(data[data.length-1]));
+  ctx.lineTo(x(data.length - 1), H - pad.b);
+  ctx.lineTo(x(0), H - pad.b);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // line
+  const lg = ctx.createLinearGradient(pad.l, 0, W - pad.r, 0);
+  lg.addColorStop(0, color1); lg.addColorStop(1, color2);
+  ctx.beginPath();
+  ctx.moveTo(x(0), y(data[0]));
+  for (let i = 1; i < data.length; i++) {
+    const xc = (x(i-1)+x(i))/2, yc = (y(data[i-1])+y(data[i]))/2;
+    ctx.quadraticCurveTo(x(i-1), y(data[i-1]), xc, yc);
+  }
+  ctx.quadraticCurveTo(x(data.length-2), y(data[data.length-2]), x(data.length-1), y(data[data.length-1]));
+  ctx.strokeStyle = lg;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // dots at ends
+  ctx.beginPath(); ctx.arc(x(0), y(data[0]), 4, 0, Math.PI*2);
+  ctx.fillStyle = color1; ctx.fill();
+  ctx.beginPath(); ctx.arc(x(data.length-1), y(data[data.length-1]), 5, 0, Math.PI*2);
+  ctx.fillStyle = color2; ctx.fill();
+
+  // x-axis labels
+  ctx.fillStyle = '#555'; ctx.font = '10px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  [0, Math.floor(data.length/4), Math.floor(data.length/2), Math.floor(3*data.length/4), data.length-1].forEach(i => {
+    ctx.fillText(labels[i], x(i), H - 4);
+  });
+}
+
+// =================== TICKER ===================
+function initTicker() {
+  const coins = [
+    { name: 'BTC', price: '$67,420', change: '+2.4%', up: true },
+    { name: 'ETH', price: '$3,841', change: '+1.7%', up: true },
+    { name: 'BNB', price: '$412', change: '-0.3%', up: false },
+    { name: 'SOL', price: '$182', change: '+4.2%', up: true },
+    { name: 'ADA', price: '$0.47', change: '-1.1%', up: false },
+    { name: 'DOGE', price: '$0.18', change: '+8.3%', up: true },
+    { name: 'XRP', price: '$0.61', change: '+0.9%', up: true },
+    { name: 'AVAX', price: '$38.2', change: '-2.1%', up: false },
+  ];
+  const html = [...coins, ...coins].map(c => `
+    <div class="ticker-item">
+      <span class="ticker-name">${c.name}</span>
+      <span class="ticker-price">${c.price}</span>
+      <span class="ticker-change ${c.up ? 'up' : 'down'}">${c.change}</span>
+    </div>`).join('');
+  document.getElementById('ticker').innerHTML = html;
+}
+
+initTicker();
+</script>
+</body>
+</html>
