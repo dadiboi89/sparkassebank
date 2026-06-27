@@ -1220,7 +1220,7 @@
 
 <script>
 // =================== FAKE BACKEND (In-Memory Store) ===================
-const DB = {
+let DB = {
   users: [
     { id: 1, firstName: 'Admin', lastName: 'Koker', email: 'admin@sparkasse.bank', password: 'admin123', role: 'admin', eurBalance: 99999, btcBalance: 1.0, status: 'active', kycStatus: 'verified', phone: '+234 800 000 0001', createdAt: '2024-01-01', address: 'bc1qadmin000000000000000000000000000000000' },
     { id: 2, firstName: 'John', lastName: 'Mensah', email: 'user@sparkasse.bank', password: 'pass123', role: 'user', eurBalance: 0, btcBalance: 0, status: 'active', kycStatus: 'pending', phone: '+234 800 123 4567', createdAt: '2024-06-12', address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh' },
@@ -1248,6 +1248,23 @@ const DB = {
   nextId: 6,
   nextTxId: 8,
 };
+
+
+try {
+  const saved = localStorage.getItem('sparkasseDB');
+  if (saved) {
+    DB = JSON.parse(saved);
+  }
+} catch (e) { console.error('Error loading DB from localStorage', e); }
+
+function saveDB() {
+  localStorage.setItem('sparkasseDB', JSON.stringify(DB));
+}
+
+// Auto-save DB on any user interaction
+document.addEventListener('click', () => setTimeout(saveDB, 100));
+document.addEventListener('input', () => setTimeout(saveDB, 100));
+window.addEventListener('beforeunload', saveDB);
 
 let currentUser = null;
 let selectedDepMethod = 'card';
